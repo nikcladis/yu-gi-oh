@@ -1,5 +1,5 @@
 const LeftColumn: React.FC = () => (
-  <div className="bg-neutral-400 p-4 text-white col-span-1 row-span-8">
+  <div className="border-4 border-purple-500 p-4 text-white col-span-1 row-span-8">
     Left Column
   </div>
 );

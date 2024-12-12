@@ -7,7 +7,7 @@ interface BoxGridProps {
 
 const FieldGrid: React.FC<BoxGridProps> = ({ boxes, onDrop }) => {
   return (
-    <div className="bg-neutral-200 row-span-5 grid grid-rows-2 grid-cols-5 gap-2">
+    <div className="row-span-5 grid grid-rows-2 grid-cols-5 gap-2">
       {Object.entries(boxes).map(([boxId, cardList]) => (
         <FieldArea
           key={boxId}

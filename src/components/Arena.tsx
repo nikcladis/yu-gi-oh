@@ -1,65 +1,47 @@
-import { useState } from "react";
-import CardHand from "@components/Hand/CardHand";
-import FieldGrid from "@components/Field/FieldGrid";
-import OpponentHand from "@components/Hand/OpponentHand";
-
-import { INITIAL_BOXES } from "@constants/boxes";
-import { INITIAL_CARDS } from "@constants/cards";
+import useGameState from "@/hooks/useGameState";
+import FieldGrid from "./Field/FieldGrid";
+import PlayerHand from "./Hand/PlayerHand";
 
 const Arena: React.FC = () => {
-  const [cards, setCards] = useState<CardData[]>(INITIAL_CARDS);
-  const [boxes, setBoxes] = useState<Record<number, CardData | null>>(
-    Object.fromEntries(INITIAL_BOXES.map((box) => [box.id, box.card]))
-  );
+  const [{ player1, player2 }, dispatch] = useGameState();
 
-  const removeCardFromHand = (
-    cards: CardData[],
-    cardId: number
-  ): CardData[] => {
-    return cards.filter((card) => card.id !== cardId);
+  const removeCardFromHand = (cardId: number, playerId: 1 | 2) => {
+    dispatch({ type: "REMOVE_CARD_FROM_HAND", cardId, playerId });
   };
 
-  const addCardToField = (
-    boxes: Record<number, CardData | null>,
+  const addCardToField = (boxId: number, card: CardData, playerId: 1 | 2) => {
+    dispatch({ type: "ADD_CARD_TO_FIELD", card, boxId, playerId });
+  };
+
+  const handleDropCardToField = (
+    card: CardData,
     boxId: number,
-    card: CardData
-  ): Record<number, CardData | null> => {
-    return {
-      ...boxes,
-      [boxId]: card, // Each box now holds only one card (or null)
-    };
-  };
-
-  const handleDrop = (card: CardData, boxId: number) => {
-    setCards((prev) => removeCardFromHand(prev, card.id));
-    setBoxes((prev) => addCardToField(prev, boxId, card));
+    playerId: 1 | 2
+  ) => {
+    removeCardFromHand(card.id, playerId);
+    addCardToField(boxId, card, playerId);
   };
 
   return (
-    <div className="bg-neutral-200 grid grid-rows-10 gap-2 row-span-8 col-span-5">
-      <OpponentHand />
-      <div className="bg-neutral-400 text-white row-span-6 grid grid-rows-11">
-        <div className="bg-neutral-200 row-span-5 grid grid-rows-2 grid-cols-5 gap-2">
-          {/* 10 square boxes (5 in each row) */}
-          {Array.from({ length: 10 }, (_, index) => (
-            <div key={index} className="bg-neutral-400 aspect-w-1 aspect-h-1">
-              {/* Content for each box */}
-            </div>
-          ))}
-        </div>
-        <div className="bg-neutral-200 row-span-1"></div>
-        <FieldGrid boxes={boxes} onDrop={handleDrop} />
+    <div className="grid grid-rows-10 gap-2 row-span-8 col-span-5">
+      {/* Render Player 2's Hand */}
+      <PlayerHand cards={player2.cards} />
+      {/* Render Field */}
+      <div className="text-white row-span-6 grid grid-rows-11">
+        <FieldGrid
+          boxes={player2.boxes}
+          onDrop={(card, boxId) => handleDropCardToField(card, boxId, 2)}
+        />
+        <div className="row-span-1"></div>
+        <FieldGrid
+          boxes={player1.boxes}
+          onDrop={(card, boxId) => handleDropCardToField(card, boxId, 1)}
+        />
       </div>
-      <div className="bg-neutral-400 p-2 text-white row-span-2 overflow-x-auto">
-        <div className="grid grid-flow-col place-items-center gap-2 h-full">
-          {cards
-            .filter((card) => card.status === "inHand")
-            .map((card) => (
-              <CardHand key={card.id} card={card} isDraggable />
-            ))}
-        </div>
-      </div>
+      {/* Render Player 1's Hand */}
+      <PlayerHand cards={player1.cards} />
     </div>
   );
 };
+
 export default Arena;
