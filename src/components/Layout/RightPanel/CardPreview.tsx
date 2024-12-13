@@ -6,26 +6,18 @@ interface CardPreviewProps {
 
 const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
   return (
-    <div className="p-4 row-span-7 flex flex-col items-center justify-center text-center">
-      {card ? (
-        <>
-          <img
-            src={card.image}
-            alt={card.name}
-            className="xl:w-full xl:h-full"
-          />
-          <h3 className="text-lg ">{card.name}</h3>
-        </>
-      ) : (
-        <>
-          <img
-            src={backImage}
-            alt={"No card selected"}
-            className="w-full h-full"
-          />
-          <h3 className="text-lg ">?</h3>
-        </>
-      )}
+    <div className="border-4 border-purple-500 p-4 row-span-5 flex flex-col items-center justify-center text-center">
+      <div
+        className="aspect-[2.25/3.25] h-full"
+        style={{
+          backgroundImage: `url(${card?.image || backImage})`,
+          backgroundSize: "contain",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+        title={card?.name}
+      />
+      <h3 className="text-lg ">{card?.name || "?"}</h3>
     </div>
   );
 };

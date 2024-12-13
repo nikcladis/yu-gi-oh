@@ -1,10 +1,11 @@
 import blueEyesWhiteDragon from "@assets/monsters/blue-eyes-white-dragon.jpg";
 import darkMagician from "@assets/monsters/dark-magician.jpg";
-import backImage from "@assets/back.png";
+// import backImage from "@assets/back.png";
 
 export const INITIAL_CARDS: CardData[] = [
   {
     id: 1,
+    playerId: 1,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",
@@ -14,6 +15,7 @@ export const INITIAL_CARDS: CardData[] = [
   },
   {
     id: 2,
+    playerId: 1,
     name: "Blue-Eyes White Dragon",
     image: blueEyesWhiteDragon,
     status: "inHand",
@@ -23,6 +25,7 @@ export const INITIAL_CARDS: CardData[] = [
   },
   {
     id: 3,
+    playerId: 1,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",
@@ -32,6 +35,7 @@ export const INITIAL_CARDS: CardData[] = [
   },
   {
     id: 4,
+    playerId: 1,
     name: "Blue-Eyes White Dragon",
     image: blueEyesWhiteDragon,
     status: "inHand",
@@ -41,6 +45,7 @@ export const INITIAL_CARDS: CardData[] = [
   },
   {
     id: 5,
+    playerId: 1,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",
@@ -53,6 +58,7 @@ export const INITIAL_CARDS: CardData[] = [
 export const OPPONENT_INITIAL_CARDS: CardData[] = [
   {
     id: 1,
+    playerId: 2,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",
@@ -62,6 +68,7 @@ export const OPPONENT_INITIAL_CARDS: CardData[] = [
   },
   {
     id: 2,
+    playerId: 2,
     name: "Blue-Eyes White Dragon",
     image: blueEyesWhiteDragon,
     status: "inHand",
@@ -71,6 +78,7 @@ export const OPPONENT_INITIAL_CARDS: CardData[] = [
   },
   {
     id: 3,
+    playerId: 2,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",
@@ -80,6 +88,7 @@ export const OPPONENT_INITIAL_CARDS: CardData[] = [
   },
   {
     id: 4,
+    playerId: 2,
     name: "Blue-Eyes White Dragon",
     image: blueEyesWhiteDragon,
     status: "inHand",
@@ -89,6 +98,7 @@ export const OPPONENT_INITIAL_CARDS: CardData[] = [
   },
   {
     id: 5,
+    playerId: 2,
     name: "Dark Magician",
     image: darkMagician,
     status: "inHand",

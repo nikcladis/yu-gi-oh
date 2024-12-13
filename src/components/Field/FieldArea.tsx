@@ -5,11 +5,12 @@ import FieldCard from "@components/Field/FieldCard";
 
 interface BoxAreaProps {
   box: BoxAreaData;
+  playerId: 1 | 2; // The player who owns this box
   onDrop: (card: CardData) => void;
 }
 
-const FieldArea: React.FC<BoxAreaProps> = ({ box, onDrop }) => {
-  const [{ isOver, canDrop }, drop] = useCardDrop(onDrop);
+const FieldArea: React.FC<BoxAreaProps> = ({ box, onDrop, playerId }) => {
+  const [{ isOver, canDrop }, drop] = useCardDrop(onDrop, playerId);
   const [defensePosition, setDefensePosition] = useState(false);
 
   const handleDefensePositionToggle = () => {

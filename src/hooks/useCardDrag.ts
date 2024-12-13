@@ -10,7 +10,7 @@ export const useCardDrag = (card: CardData) => {
     }),
   }));
 
-  // Disable the default drag preview
+  // Disable the default HTML5 drag preview since we want custom styling
   useEffect(() => {
     preview(null);
   }, [preview]);

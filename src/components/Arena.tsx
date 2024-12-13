@@ -1,6 +1,6 @@
-import useGameState from "@/hooks/useGameState";
-import FieldGrid from "./Field/FieldGrid";
-import PlayerHand from "./Hand/PlayerHand";
+import useGameState from "@hooks/useGameState";
+import FieldGrid from "@components/Field/FieldGrid";
+import PlayerHand from "@components/Hand/PlayerHand";
 
 const Arena: React.FC = () => {
   const [{ player1, player2 }, dispatch] = useGameState();
@@ -18,27 +18,31 @@ const Arena: React.FC = () => {
     boxId: number,
     playerId: 1 | 2
   ) => {
+    // Both remove from hand and add to field
     removeCardFromHand(card.id, playerId);
     addCardToField(boxId, card, playerId);
   };
 
   return (
     <div className="grid grid-rows-10 gap-2 row-span-8 col-span-5">
-      {/* Render Player 2's Hand */}
+      {/* Player 2 hand */}
       <PlayerHand cards={player2.cards} />
-      {/* Render Field */}
       <div className="text-white row-span-6 grid grid-rows-11">
+        {/* Player 2 field */}
         <FieldGrid
           boxes={player2.boxes}
+          playerId={2}
           onDrop={(card, boxId) => handleDropCardToField(card, boxId, 2)}
         />
         <div className="row-span-1"></div>
+        {/* Player 1 field */}
         <FieldGrid
           boxes={player1.boxes}
+          playerId={1}
           onDrop={(card, boxId) => handleDropCardToField(card, boxId, 1)}
         />
       </div>
-      {/* Render Player 1's Hand */}
+      {/* Player 1 hand */}
       <PlayerHand cards={player1.cards} />
     </div>
   );

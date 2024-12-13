@@ -8,7 +8,7 @@ import RightPanel from "@components/Layout/RightPanel/RightPanel";
 const App: React.FC = () => {
   return (
     <CardInfoProvider>
-      <div className="bg-black grid grid-cols-8 gap-2 p-2 h-screen">
+      <div className="bg-black grid grid-cols-8 gap-2 p-2 min-h-screen max-h-fit">
         <LeftPanel />
         <DndProvider backend={HTML5Backend}>
           <Arena />

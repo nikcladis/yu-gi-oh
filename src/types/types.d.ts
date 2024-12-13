@@ -27,6 +27,7 @@ declare global {
 
   interface CardData {
     id: number;
+    playerId: 1 | 2;
     name: string;
     type: string;
     image: string;
@@ -35,6 +36,7 @@ declare global {
     defense?: number;
     description?: string;
   }
+  
 
   interface BoxAreaData {
     id: number;
