@@ -1,19 +1,16 @@
 declare global {
+  type PlayerState = {
+    cards: CardData[];
+    boxes: Record<number, CardData | null>;
+    selectedCard: CardData | null;
+  };
+
   type State = {
-    player1: {
-      cards: CardData[];
-      boxes: Record<number, CardData | null>;
-      selectedCard: CardData | null;
-    };
-    player2: {
-      cards: CardData[];
-      boxes: Record<number, CardData | null>;
-      selectedCard: CardData | null;
-    };
+    player1: PlayerState;
+    player2: PlayerState;
   };
 
   type Action =
-    | { type: "DRAW_CARD_FROM_DECK"; card: CardData; playerId: 1 | 2 }
     | { type: "REMOVE_CARD_FROM_HAND"; cardId: number; playerId: 1 | 2 }
     | {
         type: "ADD_CARD_TO_FIELD";
@@ -21,22 +18,52 @@ declare global {
         boxId: number;
         playerId: 1 | 2;
       }
-    | { type: "SET_SELECTED_CARD"; card: CardData | null; playerId: 1 | 2 };
+    | { type: "SET_SELECTED_CARD"; card: CardData | null; playerId: 1 | 2 }
+    | { type: "DRAW_CARDS_FROM_DECK"; playerId: 1 | 2; numberOfCards: number };
 
-  type CardStatus = "inDeck" | "inHand" | "inBattle" | "inGraveyard";
+  type CardStatus =
+    | "inDeck"
+    | "inHand"
+    | "inBattle"
+    | "inGraveyard"
+    | "inBanished";
 
-  interface CardData {
+  type CardPosition = "inAttack" | "inDefense" | null;
+
+  type CardType = "Monster" | "Spell" | "Trap";
+
+  interface CardBase {
     id: number;
     playerId: 1 | 2;
     name: string;
-    type: string;
     image: string;
     status: CardStatus;
-    attack?: number;
-    defense?: number;
+    type: CardType;
     description?: string;
   }
-  
+
+  interface CardMoster extends CardBase {
+    type: "Monster";
+    position: CardPosition;
+    attack: number;
+    defense: number;
+    level: number;
+    effect?: string;
+  }
+
+  interface CardSpell extends CardBase {
+    type: "Spell";
+    effect: string;
+    isContinuous?: boolean;
+  }
+
+  interface CardTrap extends CardBase {
+    type: "Trap";
+    effect: string;
+    isCounter?: boolean;
+  }
+
+  type CardData = CardMoster | CardSpell | CardTrap;
 
   interface BoxAreaData {
     id: number;

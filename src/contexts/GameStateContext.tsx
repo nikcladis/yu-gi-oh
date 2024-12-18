@@ -1,4 +1,10 @@
-import { createContext, useContext, useReducer, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  ReactNode,
+  useEffect,
+} from "react";
 
 import { gameReducer, initialState } from "@hooks/useGameState";
 
@@ -21,6 +27,13 @@ export const GameStateProvider: React.FC<GameStateProviderProps> = ({
 }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
+  useEffect(() => {
+    // Perform initial draw for Player 1 and Player 2
+    dispatch({ type: "DRAW_CARDS_FROM_DECK", playerId: 1, numberOfCards: 5 });
+    dispatch({ type: "DRAW_CARDS_FROM_DECK", playerId: 2, numberOfCards: 5 });
+  }, []);
+
+  console.log(state);
   return (
     <GameStateContext.Provider value={{ state, dispatch }}>
       {children}

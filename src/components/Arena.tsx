@@ -1,9 +1,22 @@
+import { useEffect, useRef } from "react";
 import useGameState from "@hooks/useGameState";
 import FieldGrid from "@components/Field/FieldGrid";
 import PlayerHand from "@components/Hand/PlayerHand";
 
 const Arena: React.FC = () => {
   const [{ player1, player2 }, dispatch] = useGameState();
+
+  const hasDispatched = useRef(false);
+
+  useEffect(() => {
+    // Prevent running this effect more than once, even in Strict Mode
+    if (hasDispatched.current) return;
+    hasDispatched.current = true;
+
+    // Draw 5 cards in first round for each player
+    dispatch({ type: "DRAW_CARDS_FROM_DECK", playerId: 1, numberOfCards: 5 });
+    dispatch({ type: "DRAW_CARDS_FROM_DECK", playerId: 2, numberOfCards: 5 });
+  }, [dispatch]);
 
   const removeCardFromHand = (cardId: number, playerId: 1 | 2) => {
     dispatch({ type: "REMOVE_CARD_FROM_HAND", cardId, playerId });
@@ -26,7 +39,7 @@ const Arena: React.FC = () => {
   return (
     <div className="grid grid-rows-10 gap-2 row-span-8 col-span-5">
       {/* Player 2 hand */}
-      <PlayerHand cards={player2.cards} />
+      <PlayerHand playerId={2} />
       <div className="text-white row-span-6 grid grid-rows-11">
         {/* Player 2 field */}
         <FieldGrid
@@ -43,7 +56,7 @@ const Arena: React.FC = () => {
         />
       </div>
       {/* Player 1 hand */}
-      <PlayerHand cards={player1.cards} />
+      <PlayerHand playerId={1} />
     </div>
   );
 };
