@@ -1,22 +1,44 @@
 import backImage from "@assets/back.png";
+import { useEffect, useState } from "react";
 
 interface Props {
   deckSize: number;
   onClick?: () => void;
   isClickable?: boolean;
+  hasDrawnCard?: boolean;
 }
 
-const Deck: React.FC<Props> = ({ deckSize, onClick, isClickable = false }) => {
+const Deck: React.FC<Props> = ({
+  deckSize,
+  onClick,
+  isClickable = false,
+  hasDrawnCard = false,
+}) => {
   const visibleCards = Math.min(deckSize, 5);
+  const [canDraw, setCanDraw] = useState(isClickable);
+
+  useEffect(() => {
+    setCanDraw(isClickable);
+  }, [isClickable]);
+
+  const handleClick = () => {
+    if (isClickable && !hasDrawnCard) {
+      onClick?.();
+      setCanDraw(false);
+    }
+  };
 
   return (
     <div
-      onClick={isClickable && deckSize > 0 ? onClick : undefined}
-      className={`border-4 border-purple-500 relative p-4 row-span-3 flex items-center justify-center ${
-        isClickable && deckSize > 0
-          ? "cursor-pointer hover:bg-purple-900"
-          : "cursor-default"
-      } transition-colors duration-200`}
+      onClick={handleClick}
+      className={`border-4 border-purple-500 relative p-4 row-span-3 flex items-center justify-center
+        ${
+          !hasDrawnCard && canDraw
+            ? "cursor-pointer hover:bg-purple-900"
+            : "cursor-not-allowed opacity-70"
+        }
+        ${hasDrawnCard ? "bg-purple-900/50" : ""}
+        transition-colors duration-200`}
     >
       {[...Array(visibleCards)].map((_, index) => {
         const offsetY = index * 2;

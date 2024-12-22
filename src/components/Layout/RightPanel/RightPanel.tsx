@@ -6,22 +6,29 @@ import { PlayerId } from "@/types/enums";
 const RightColumn: React.FC = () => {
   const { state, dispatch, selectedCard } = useGameContext();
 
-  const deckSizeOpponent = state.players[PlayerId.Two].deck?.length || 0;
+  const deckSizeOpponent = state.players[PlayerId.Opponent].deck?.length || 0;
+  const deckSizeSelf = state.players[PlayerId.Self].deck?.length || 0;
 
-  const deckSizePlayer = state.players[PlayerId.One].deck?.length || 0;
+  const handleDrawCardOpponent = () => {
+    dispatch({ type: "DRAW_CARD_FROM_DECK", playerId: PlayerId.Opponent });
+  };
 
-  const handleDrawCard = () => {
-    dispatch({ type: "DRAW_CARD_FROM_DECK", playerId: PlayerId.One });
+  const handleDrawCardSelf = () => {
+    dispatch({ type: "DRAW_CARD_FROM_DECK", playerId: PlayerId.Self });
   };
 
   return (
     <div className="border-4 border-purple-500 p-4 text-white col-span-2 row-span-8 grid grid-rows-11 gap-4">
-      <Deck deckSize={deckSizeOpponent} isClickable={false} />
+      <Deck
+        deckSize={deckSizeOpponent}
+        onClick={handleDrawCardOpponent}
+        isClickable={state.currentPlayer === PlayerId.Opponent}
+      />
       <CardPreview card={selectedCard} />
       <Deck
-        deckSize={deckSizePlayer}
-        onClick={handleDrawCard}
-        isClickable={true}
+        deckSize={deckSizeSelf}
+        onClick={handleDrawCardSelf}
+        isClickable={state.currentPlayer === PlayerId.Self}
       />
     </div>
   );

@@ -1,9 +1,26 @@
-const INITIAL_FIELD: FieldArea[] = Array.from({ length: 20 }, (_, index) => ({
-  id: index,
-  card: null,
-}));
-
 export const FIELD_STATE: FieldState = {
-  playerOne: INITIAL_FIELD.slice(0, 10),
-  playerTwo: INITIAL_FIELD.slice(10, 20),
+  playerSelf: [
+    { id: 0, card: null },
+    { id: 1, card: null },
+    { id: 2, card: null },
+    { id: 3, card: null },
+    { id: 4, card: null },
+    { id: 5, card: null },
+    { id: 6, card: null },
+    { id: 7, card: null },
+    { id: 8, card: null },
+    { id: 9, card: null },
+  ],
+  playerOpponent: [
+    { id: 0, card: null },
+    { id: 1, card: null },
+    { id: 2, card: null },
+    { id: 3, card: null },
+    { id: 4, card: null },
+    { id: 5, card: null },
+    { id: 6, card: null },
+    { id: 7, card: null },
+    { id: 8, card: null },
+    { id: 9, card: null },
+  ],
 };

@@ -1,2 +1,2 @@
-export { default as CardHand } from "@components/Hand/CardHand";
-export { default as Hand } from "@components/Hand/Hand";
+export { default as Hand } from "./Hand";
+export { default as CardHand } from "./CardHand";

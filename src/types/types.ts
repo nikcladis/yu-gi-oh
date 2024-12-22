@@ -1,4 +1,4 @@
-import { CardType, PlayerId } from "./enums";
+import { CardType, PlayerId, Phase } from "./enums";
 
 declare global {
   // interfaces.ts
@@ -20,6 +20,7 @@ declare global {
     graveyard: CardData[] | null;
     banished: CardData[] | null;
     selectedCard: CardData | null;
+    hasDrawnCard: boolean;
   }
 
   export interface FieldArea {
@@ -28,12 +29,14 @@ declare global {
   }
 
   export interface FieldState {
-    playerOne: FieldArea[];
-    playerTwo: FieldArea[];
+    playerSelf: FieldArea[];
+    playerOpponent: FieldArea[];
   }
 
   export interface GameState {
     round: number;
+    currentPlayer: PlayerId;
+    currentPhase: Phase;
     field: FieldState;
     players: Record<PlayerId, PlayerState>;
   }
@@ -49,7 +52,16 @@ declare global {
         playerId: PlayerId;
       }
     | { type: "SET_SELECTED_CARD"; card: CardData | null; playerId: PlayerId }
-    | { type: "ADD_CARDS_TO_HAND"; playerId: PlayerId; amount: number };
+    | { type: "ADD_CARDS_TO_HAND"; playerId: PlayerId; amount: number }
+    | {
+        type: "UPDATE_LIFE_POINTS";
+        playerId: PlayerId;
+        amount: number;
+        operation: "add" | "subtract";
+      }
+    | { type: "NEXT_PHASE" }
+    | { type: "END_ROUND" }
+    | { type: "START_GAME" };
 }
 
 export { CardType, PlayerId };

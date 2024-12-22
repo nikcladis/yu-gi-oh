@@ -2,45 +2,58 @@ import { useReducer } from "react";
 import { FIELD_STATE } from "@/constants/field";
 import { GAME_CARDS } from "@constants/cards";
 import { PlayerId } from "@/types/enums";
+import { Phase } from "@/types/enums";
 
 export const initialState: GameState = {
   players: {
-    [PlayerId.One]: {
+    [PlayerId.Self]: {
       lifePoints: 8000,
-      deck: GAME_CARDS.playerOne,
+      deck: GAME_CARDS.playerSelf,
       hand: [],
       graveyard: [],
       banished: [],
       selectedCard: null,
+      hasDrawnCard: false,
     },
-    [PlayerId.Two]: {
+    [PlayerId.Opponent]: {
       lifePoints: 8000,
-      deck: GAME_CARDS.playerTwo,
+      deck: GAME_CARDS.playerOpponent,
       hand: [],
       graveyard: [],
       banished: [],
       selectedCard: null,
+      hasDrawnCard: false,
     },
   },
   field: {
-    playerOne: FIELD_STATE.playerOne.map((field: FieldArea) => ({
+    playerSelf: FIELD_STATE.playerSelf.map((field: FieldArea) => ({
       id: field.id,
       card: field.card || null,
     })),
-    playerTwo: FIELD_STATE.playerTwo.map((field: FieldArea) => ({
+    playerOpponent: FIELD_STATE.playerOpponent.map((field: FieldArea) => ({
       id: field.id,
       card: field.card || null,
     })),
   },
   round: 1,
+  currentPlayer: PlayerId.Self,
+  currentPhase: Phase.Draw,
 };
 
-export function gameReducer(state: GameState, action: Action): GameState {
+export function gameReducer(
+  state: GameState,
+  action: Action & { playerId?: PlayerId }
+): GameState {
   const { players, field } = state;
-  const playerState = players[action.playerId];
+  const playerState = players[action.playerId as PlayerId];
 
   switch (action.type) {
     case "DRAW_CARD_FROM_DECK": {
+      if (playerState.hasDrawnCard) {
+        console.warn("Already drawn a card this turn");
+        return state;
+      }
+
       if (!playerState.deck || playerState.deck.length === 0) {
         console.warn(`Player ${action.playerId} has no cards in the deck.`);
         return state;
@@ -58,6 +71,7 @@ export function gameReducer(state: GameState, action: Action): GameState {
             ...playerState,
             deck: updatedDeck,
             hand: updatedHand,
+            hasDrawnCard: true,
           },
         },
       };
@@ -103,7 +117,7 @@ export function gameReducer(state: GameState, action: Action): GameState {
 
       // Determine which player's field to update
       const fieldKey =
-        action.playerId === PlayerId.One ? "playerOne" : "playerTwo";
+        action.playerId === PlayerId.Self ? "playerSelf" : "playerOpponent";
 
       const updatedFieldArea = field[fieldKey].map((area: FieldArea) =>
         area.id === fieldId ? { ...area, card } : area
@@ -160,6 +174,73 @@ export function gameReducer(state: GameState, action: Action): GameState {
             ...playerState,
             deck: updatedDeck,
             hand: updatedHand,
+          },
+        },
+      };
+    }
+
+    case "UPDATE_LIFE_POINTS": {
+      const currentPoints = playerState.lifePoints;
+      const newPoints =
+        action.operation === "add"
+          ? currentPoints + action.amount
+          : currentPoints - action.amount;
+
+      // Ensure life points don't go below 0
+      const updatedPoints = Math.max(0, newPoints);
+
+      return {
+        ...state,
+        players: {
+          ...players,
+          [action.playerId]: {
+            ...playerState,
+            lifePoints: updatedPoints,
+          },
+        },
+      };
+    }
+
+    case "START_GAME": {
+      return {
+        ...state,
+        round: 1,
+        currentPlayer: PlayerId.Self,
+      };
+    }
+
+    case "NEXT_PHASE": {
+      const phases = Object.values(Phase);
+      const currentIndex = phases.indexOf(state.currentPhase);
+      const nextIndex = (currentIndex + 1) % phases.length;
+
+      if (phases[nextIndex] === Phase.Draw) {
+        // If we're going back to Draw phase, it means end of turn
+        return gameReducer(state, { type: "END_ROUND" });
+      }
+
+      return {
+        ...state,
+        currentPhase: phases[nextIndex],
+      };
+    }
+
+    case "END_ROUND": {
+      const nextPlayer =
+        state.currentPlayer === PlayerId.Self
+          ? PlayerId.Opponent
+          : PlayerId.Self;
+
+      return {
+        ...state,
+        round: nextPlayer === PlayerId.Self ? state.round + 1 : state.round,
+        currentPlayer: nextPlayer,
+        currentPhase: Phase.Draw,
+        players: {
+          ...players,
+          [nextPlayer]: {
+            ...players[nextPlayer],
+            hasDrawnCard: false,
           },
         },
       };
