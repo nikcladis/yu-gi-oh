@@ -1,49 +1,78 @@
-import useGameState from "@hooks/useGameState";
-import FieldGrid from "@components/Field/FieldGrid";
-import PlayerHand from "@components/Hand/PlayerHand";
+import { useCallback, useEffect, useRef } from "react";
+import { Hand } from "@components/Hand";
+import { FieldGrid } from "@components/Field";
+import LeftPanel from "@components/Layout/LeftPanel/LeftPanel";
+import RightPanel from "@components/Layout/RightPanel/RightPanel";
+import { PlayerId } from "@/types/enums";
+import { useGameContext } from "@contexts/GameContext";
 
 const Arena: React.FC = () => {
-  const [{ player1, player2 }, dispatch] = useGameState();
+  const { state, dispatch } = useGameContext();
+  const initialized = useRef(false);
 
-  const removeCardFromHand = (cardId: number, playerId: 1 | 2) => {
-    dispatch({ type: "REMOVE_CARD_FROM_HAND", cardId, playerId });
-  };
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      dispatch({
+        type: "ADD_CARDS_TO_HAND",
+        playerId: PlayerId.One,
+        amount: 5,
+      });
+      dispatch({
+        type: "ADD_CARDS_TO_HAND",
+        playerId: PlayerId.Two,
+        amount: 5,
+      });
+    }
+  }, [dispatch]);
 
-  const addCardToField = (boxId: number, card: CardData, playerId: 1 | 2) => {
-    dispatch({ type: "ADD_CARD_TO_FIELD", card, boxId, playerId });
-  };
+  const removeCardFromHand = useCallback(
+    (cardId: number, playerId: PlayerId) => {
+      dispatch({ type: "REMOVE_CARD_FROM_HAND", cardId, playerId });
+    },
+    [dispatch]
+  );
 
-  const handleDropCardToField = (
-    card: CardData,
-    boxId: number,
-    playerId: 1 | 2
-  ) => {
-    // Both remove from hand and add to field
-    removeCardFromHand(card.id, playerId);
-    addCardToField(boxId, card, playerId);
-  };
+  const addCardToField = useCallback(
+    (fieldId: number, card: CardData, playerId: PlayerId) => {
+      dispatch({ type: "ADD_CARD_TO_FIELD", card, fieldId, playerId });
+    },
+    [dispatch]
+  );
+
+  const handleDropCardToField = useCallback(
+    (card: CardData, FieldId: number, playerId: PlayerId) => {
+      removeCardFromHand(card.id, playerId);
+      addCardToField(FieldId, card, playerId);
+    },
+    [removeCardFromHand, addCardToField]
+  );
 
   return (
-    <div className="grid grid-rows-10 gap-2 row-span-8 col-span-5">
-      {/* Player 2 hand */}
-      <PlayerHand cards={player2.cards} />
-      <div className="text-white row-span-6 grid grid-rows-11">
-        {/* Player 2 field */}
-        <FieldGrid
-          boxes={player2.boxes}
-          playerId={2}
-          onDrop={(card, boxId) => handleDropCardToField(card, boxId, 2)}
-        />
-        <div className="row-span-1"></div>
-        {/* Player 1 field */}
-        <FieldGrid
-          boxes={player1.boxes}
-          playerId={1}
-          onDrop={(card, boxId) => handleDropCardToField(card, boxId, 1)}
-        />
+    <div className="bg-black grid grid-cols-8 gap-2 p-2 min-h-screen max-h-fit">
+      <LeftPanel />
+      <div className="grid grid-rows-10 gap-2 row-span-8 col-span-5">
+        <Hand cards={state.players[PlayerId.Two].hand || []} isOpponent />
+        <div className="text-white row-span-6 grid grid-rows-11">
+          <FieldGrid
+            fieldData={state.field.playerTwo}
+            playerId={PlayerId.Two}
+            onDrop={(card, boxId) =>
+              handleDropCardToField(card, boxId, PlayerId.Two)
+            }
+          />
+          <div className="row-span-1"></div>
+          <FieldGrid
+            fieldData={state.field.playerOne}
+            playerId={PlayerId.One}
+            onDrop={(card, boxId) =>
+              handleDropCardToField(card, boxId, PlayerId.One)
+            }
+          />
+        </div>
+        <Hand cards={state.players[PlayerId.One].hand || []} isDraggable />
       </div>
-      {/* Player 1 hand */}
-      <PlayerHand cards={player1.cards} />
+      <RightPanel />
     </div>
   );
 };

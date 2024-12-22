@@ -1,24 +1,29 @@
-import FieldArea from "@components/Field/FieldArea";
-
-interface BoxGridProps {
-  boxes: Record<number, CardData | null>;
-  playerId: 1 | 2;
+import { memo } from "react";
+import { FieldArea } from "@components/Field";
+import { PlayerId } from "@/types/enums";
+interface FieldGridProps {
+  fieldData: FieldArea[];
+  playerId: PlayerId;
   onDrop: (card: CardData, boxId: number) => void;
 }
 
-const FieldGrid: React.FC<BoxGridProps> = ({ boxes, playerId, onDrop }) => {
+const FieldGrid: React.FC<FieldGridProps> = ({
+  fieldData,
+  playerId,
+  onDrop,
+}) => {
   return (
     <div className="row-span-5 grid grid-rows-2 grid-cols-5 gap-2">
-      {Object.entries(boxes).map(([boxId, cardData]) => (
+      {fieldData.map((fieldArea, index) => (
         <FieldArea
-          key={boxId}
-          box={{ id: Number(boxId), card: cardData }}
+          key={index}
+          fieldArea={fieldArea}
           playerId={playerId}
-          onDrop={(card) => onDrop(card, Number(boxId))}
+          onDrop={(card: CardData) => onDrop(card, index)}
         />
       ))}
     </div>
   );
 };
 
-export default FieldGrid;
+export default memo(FieldGrid);

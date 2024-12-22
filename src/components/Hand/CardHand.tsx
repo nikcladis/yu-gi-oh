@@ -1,16 +1,15 @@
+import { memo } from "react";
 import { useCardDrag } from "@hooks/useCardDrag";
-import { useCardInfoContext } from "@contexts/CardInfoContext";
+import { useGameContext } from "@contexts/GameContext";
+import Card from "@components/Common/Card";
 
 interface CardHandProps {
   card: CardData;
   isDraggable?: boolean;
 }
 
-const CardHand: React.FC<CardHandProps> = ({
-  card,
-  isDraggable = false,
-}) => {
-  const { setSelectedCard } = useCardInfoContext();
+const CardHand: React.FC<CardHandProps> = ({ card, isDraggable = false }) => {
+  const { setSelectedCard } = useGameContext();
   const { isDragging, drag } = useCardDrag(card);
 
   const handleCardClick = () => {
@@ -23,17 +22,10 @@ const CardHand: React.FC<CardHandProps> = ({
       className={`aspect-[2.25/3.25] w-[4rem] md:w-[5rem] lg:w-[6rem] ${
         isDragging ? "opacity-20" : ""
       }`}
-      style={{
-        backgroundImage: `url(${card.image})`,
-        backgroundSize: "contain",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        cursor: isDraggable ? "grab" : "default",
-      }}
-      title={card.name}
-      onClick={handleCardClick}
-    />
+    >
+      <Card card={card} onClick={handleCardClick} isDraggable={isDraggable} />
+    </div>
   );
 };
 
-export default CardHand;
+export default memo(CardHand);

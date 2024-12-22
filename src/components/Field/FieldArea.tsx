@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Shield, Sword } from "lucide-react";
+import { FieldCard } from "@components/Field";
 import { useCardDrop } from "@hooks/useCardDrop";
-import FieldCard from "@components/Field/FieldCard";
+import { PlayerId, CardType } from "@/types/enums";
 
-interface BoxAreaProps {
-  box: BoxAreaData;
-  playerId: 1 | 2; // The player who owns this box
+interface FieldAreaProps {
+  fieldArea: FieldArea;
+  playerId: PlayerId;
   onDrop: (card: CardData) => void;
 }
 
-const FieldArea: React.FC<BoxAreaProps> = ({ box, onDrop, playerId }) => {
+const FieldArea: React.FC<FieldAreaProps> = ({
+  fieldArea,
+  onDrop,
+  playerId,
+}) => {
   const [{ isOver, canDrop }, drop] = useCardDrop(onDrop, playerId);
   const [defensePosition, setDefensePosition] = useState(false);
 
@@ -24,18 +29,20 @@ const FieldArea: React.FC<BoxAreaProps> = ({ box, onDrop, playerId }) => {
         canDrop && isOver ? "bg-green-300 scale-105" : "bg-black"
       }`}
     >
-      {box.card && (
+      {fieldArea.card && (
         <>
           <FieldCard
-            key={box.card.id}
-            card={box.card}
+            key={fieldArea.card.id}
+            card={fieldArea.card}
             defensePosition={defensePosition}
             onDefensePositionToggle={handleDefensePositionToggle}
           />
-          {box.card.type === "monster" && (
+          {fieldArea.card.type === CardType.Monster && (
             <div className="absolute top-1 right-1 flex justify-center items-center flex-col">
               <span className="text-white font-bold">
-                {defensePosition ? box.card.defense : box.card.attack}
+                {defensePosition
+                  ? fieldArea.card.defense
+                  : fieldArea.card.attack}
               </span>
               {defensePosition ? (
                 <Shield size={16} fill="white" color="white" />
@@ -50,4 +57,4 @@ const FieldArea: React.FC<BoxAreaProps> = ({ box, onDrop, playerId }) => {
   );
 };
 
-export default FieldArea;
+export default memo(FieldArea);

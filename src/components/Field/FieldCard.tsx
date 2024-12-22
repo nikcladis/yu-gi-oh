@@ -1,17 +1,18 @@
-import { useCardInfoContext } from "@contexts/CardInfoContext";
+import { useGameContext } from "@contexts/GameContext";
+import Card from "@components/Common/Card";
 
-interface CardFieldProps {
+interface FieldCardProps {
   card: CardData;
   defensePosition: boolean;
   onDefensePositionToggle: () => void;
 }
 
-const FieldCard: React.FC<CardFieldProps> = ({
+const FieldCard: React.FC<FieldCardProps> = ({
   card,
   defensePosition,
   onDefensePositionToggle,
 }) => {
-  const { setSelectedCard } = useCardInfoContext();
+  const { setSelectedCard } = useGameContext();
 
   const handleCardDoubleClick = () => {
     onDefensePositionToggle();
@@ -22,17 +23,9 @@ const FieldCard: React.FC<CardFieldProps> = ({
   };
 
   return (
-    <div
-      className="w-full h-full"
-      style={{
-        backgroundImage: `url(${card.image})`,
-        backgroundSize: "contain",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        transform: defensePosition ? "rotate(90deg)" : "rotate(0deg)",
-        transition: "transform 0.3s ease",
-      }}
-      title={card.name}
+    <Card
+      card={card}
+      defensePosition={defensePosition}
       onClick={handleCardClick}
       onDoubleClick={handleCardDoubleClick}
     />
